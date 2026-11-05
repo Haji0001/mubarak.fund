@@ -52,14 +52,15 @@
     display:flex;flex-direction:column;align-items:center;gap:0;padding:16px 26px;opacity:0;transition:opacity 2s ease;pointer-events:none}
   #hint.show{opacity:1;pointer-events:auto}
   #hint span{font:300 12px/1 "Helvetica Neue",Helvetica,Arial,sans-serif;letter-spacing:.5em;margin-right:-.5em;text-transform:uppercase;
-    color:#e9d3a0;animation:breathe 3.6s ease-in-out infinite;transition:color .5s}
+    color:#e9d3a0;white-space:nowrap;animation:breathe 2.6s ease-in-out infinite;transition:color .5s}
   @keyframes breathe{0%,100%{text-shadow:0 0 0 rgba(240,190,80,0);color:#d9c08a}50%{text-shadow:0 0 10px rgba(240,190,80,.7);color:#fff1cc}}
-  #hint{flex-direction:row!important;gap:18px!important}
+  #hint{flex-direction:row!important;gap:18px!important;width:max-content;max-width:calc(100vw - 24px);white-space:nowrap}
   #hint::before,#hint::after{content:"";display:block;width:64px;height:1px;flex:none;transition:width .6s ease,opacity .6s ease;
-    animation:line 3.6s ease-in-out infinite}
-  #hint::before{background:linear-gradient(90deg,rgba(224,180,90,0),#e9c472);transform-origin:right center}
-  #hint::after{background:linear-gradient(90deg,#e9c472,rgba(224,180,90,0));transform-origin:left center}
-  @keyframes line{0%,100%{opacity:.35;transform:scaleX(.7);box-shadow:none}50%{opacity:1;transform:scaleX(1);box-shadow:0 0 8px rgba(240,190,80,.7)}}
+    animation:line 2.6s ease-in-out infinite}
+  #hint::before{background:linear-gradient(90deg,rgba(255,214,120,0),#ffd98a 70%,#fff0c8);transform-origin:right center}
+  #hint::after{background:linear-gradient(90deg,#fff0c8,#ffd98a 30%,rgba(255,214,120,0));transform-origin:left center}
+  @keyframes line{0%,100%{opacity:.5;transform:scaleX(.6);box-shadow:0 0 2px rgba(255,200,90,.3)}50%{opacity:1;transform:scaleX(1.08);box-shadow:0 0 12px rgba(255,205,95,.95),0 0 3px rgba(255,240,200,.9)}}
+  @media (max-width:600px){#hint{bottom:calc(clamp(26px,5vh,52px) + 40px);gap:12px!important;padding:14px 16px}#hint::before,#hint::after{width:44px}#hint:hover::before,#hint:hover::after{width:60px}}
   #hint:hover::before,#hint:hover::after,#hint:focus-visible::before,#hint:focus-visible::after{animation:none;width:96px;opacity:1;transform:none;box-shadow:0 0 10px rgba(240,190,80,.8)}
   #hint:hover span,#hint:focus-visible span{animation:none;color:#fff4d8;text-shadow:0 0 10px rgba(240,190,80,.85)}
   @media (prefers-reduced-motion:reduce){#hint span,#hint::before,#hint::after{animation:none}}

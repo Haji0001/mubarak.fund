@@ -899,7 +899,9 @@
   let C = { ...PRESETS.D.c, frame: 0, seal: 0 }, current = '';
   const LOOP = false; // demo: once assembled, the word, frame and seal stay
 
-  const WORD = 'MUBARAK', LATIN = 'MUBARK', ARABIC = 'مبارك', ARAB_LET = ['م', 'ب', 'ا', 'ر', 'ك'];
+  const SUB = "БЛАГОТВОРИТЕЛЬНЫЙ ФОНД"; let sfs = 0, subY = 0;
+  function subGlyphs(c) { c.font = `400 ${sfs}px ${wordFont}`; const tr = sfs * 0.42; const cw = [...SUB].map(ch => c.measureText(ch).width); let x = W / 2 - (cw.reduce((a, b) => a + b, 0) + tr * (SUB.length - 1)) / 2; return [...SUB].map((ch, i) => { const g = { ch, x: x + cw[i] / 2 }; x += cw[i] + tr; return g; }); }
+  const WORD = 'МУБАРАК', LATIN = 'МУБАРК', ARABIC = 'مبارك', ARAB_LET = ['م', 'ب', 'ا', 'ر', 'ك'];
   const rnd = a => a[(Math.random() * a.length) | 0];
   const FONTS = {
     system: '"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif',
@@ -966,11 +968,11 @@
     const maxW = W * (C.frame ? 0.76 : 0.84);
     if (total > maxW) { wfs = Math.floor(wfs * maxW / total); measure(); }
     afs = Math.round(wfs * (C.arabic === 'amiri' ? 0.72 : 0.62));
-    sealR = C.seal ? Math.round(Math.max(34, wfs * 0.52)) : 0;
+    sfs = Math.round(Math.max(11, wfs * 0.17)); sealR = C.seal ? Math.round(Math.max(34, wfs * 0.52)) : 0;
     const gapV = wfs * 0.45;
-    const blockH = wfs + wfs * 0.35 + afs * 1.25 + (C.seal ? gapV + sealR * 2 : 0);
+    const blockH = sfs * 3 + wfs + wfs * 0.35 + afs * 1.25 + (C.seal ? gapV + sealR * 2 : 0);
     const top = H * 0.44 - blockH / 2;
-    wordY = Math.round(top + wfs / 2);
+    wordY = Math.round(top + sfs * 3 + wfs / 2); subY = Math.round(wordY - wfs * 0.62 - sfs * 1.5);
     arY = Math.round(wordY + wfs * 0.55 + afs * 0.78);
     sealY = Math.round(arY + afs * 0.62 + gapV + sealR);
     let x = (W - total) / 2;
@@ -982,7 +984,7 @@
     const l = (W - total) / 2, r = (W + total) / 2;
     frameBox = { l: l - wfs * 0.55, r: r + wfs * 0.55, t: wordY - wfs * 0.85, b: arY + afs * 0.75 };
     wordBox = { l: l - wfs * 0.5, r: r + wfs * 0.5, t: wordY - wfs * 0.85, b: arY + afs * 0.8 };
-    clearBox = { l: Math.min(wordBox.l, frameBox.l) - 10, r: Math.max(wordBox.r, frameBox.r) + 10, t: wordBox.t - 10,
+    clearBox = { l: Math.min(wordBox.l, frameBox.l) - 10, r: Math.max(wordBox.r, frameBox.r) + 10, t: Math.min(wordBox.t, subY - sfs * 0.9) - 10,
       b: C.seal ? sealY + sealR + 14 : wordBox.b + 10 };
   }
 
@@ -1238,6 +1240,7 @@
     if (phase === 'hold' || phase === 'fade') {
       const at = phase === 'hold' ? ease((phaseT - 1.2) / 1.8) : 1;
       if (at > 0) {
+        { wctx.save(); wctx.textAlign = 'center'; wctx.textBaseline = 'middle'; const gs = subGlyphs(wctx); wctx.globalAlpha = at * .95; wctx.fillStyle = goldFill(wctx, subY - sfs * .5, subY + sfs * .5); for (const g of gs) wctx.fillText(g.ch, g.x, subY); wctx.restore(); }
         wctx.save(); wctx.direction = 'rtl'; wctx.font = `${C.arabic === 'amiri' ? 700 : 400} ${afs}px ${arFont}`;
         wctx.globalAlpha = at * .95;
         if (C.relief) { wctx.fillStyle = 'rgba(40,24,4,.85)'; wctx.fillText(ARABIC, W / 2, arY + afs * .03); }
@@ -1321,6 +1324,7 @@
         mctx.save(); mctx.translate(sl.x, wordY); mctx.scale(sc, sc); mctx.globalAlpha = t * wa;
         mctx.strokeText(sl.ch, 0, 0); mctx.fillText(sl.ch, 0, 0); mctx.restore();
       }
+      if (atNow > 0) { mctx.save(); mctx.textAlign = 'center'; mctx.textBaseline = 'middle'; const gs = subGlyphs(mctx); mctx.lineWidth = Math.max(sfs * .5, wfs * .09); mctx.globalAlpha = atNow * wa; for (const g of gs) { mctx.strokeText(g.ch, g.x, subY); mctx.fillText(g.ch, g.x, subY); } mctx.restore(); }
       if (atNow > 0) { mctx.save(); mctx.direction = 'rtl'; mctx.font = `${C.arabic === 'amiri' ? 700 : 400} ${afs}px ${arFont}`; mctx.lineWidth = afs * .09;
         mctx.globalAlpha = atNow * wa; mctx.strokeText(ARABIC, W / 2, arY); mctx.fillText(ARABIC, W / 2, arY); mctx.restore(); }
       mctx.globalAlpha = 1;
